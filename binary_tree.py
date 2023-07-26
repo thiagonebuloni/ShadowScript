@@ -11,9 +11,16 @@ class Tree:
 
     def preorder(self, start, records):
         if start is not None:
-            records.append(start.value)
-            records = self.preorder(start.left, records)
-            records = self.preorder(start.right, records)
+            records.append(start.value)  # Root
+            records = self.preorder(start.left, records)  # Left subtreer
+            records = self.preorder(start.right, records)  # Right subtree
+        return records
+
+    def postorder(self, start, records):
+        if start is not None:
+            records = self.postorder(start.left, records)  # Left subtreer
+            records = self.postorder(start.right, records)  # Right subtree
+            records.append(start.value)  # Root
         return records
 
 
@@ -23,11 +30,12 @@ tree.root.right = Node(4)
 tree.root.left.left = Node(2)
 tree.root.left.right = Node(8)
 print(tree.preorder(tree.root, []))
+print(tree.postorder(tree.root, []))
 
 
 #       5
 #      / \
 #     3  4
 #    /   \
-#   2    8
+#   2     8
 #  / \

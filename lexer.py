@@ -3,7 +3,7 @@ from tokens import *
 
 class Lexer:
     digits = "0123456789"
-    operations = "+-/*"
+    operations = "+-/*()"
     stopwords = [" "]
 
     def __init__(self, text):

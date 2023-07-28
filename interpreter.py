@@ -46,24 +46,44 @@ class Interpreter:
             else Float(output)
         )
 
+    def compute_unary(self, operator, operand):
+        operand_type = (
+            "VAR" if str(operand.type).startswith("VAR") else str(operand.type)
+        )
+        operand = getattr(self, f"read_{operand_type}")(operand.value)
+
+        if operator.value == "+":
+            return +operand
+        elif operator.value == "-":
+            return -operand
+
     def interpret(self, tree=None):
         if tree is None:
             tree = self.tree
 
-        # evaluating left subtree
-        left_node = tree[0]
+        # Unary operation
+        if isinstance(tree, list) and len(tree) == 2:
+            return self.compute_unary(tree[0], tree[1])
 
-        if isinstance(left_node, list):
-            left_node = self.interpret(left_node)
+        # No operation
+        elif not isinstance(tree, list):
+            return tree
 
-        # evaluating right subtree
-        right_node = tree[2]  # right subtree
-        if isinstance(right_node, list):
-            right_node = self.interpret(right_node)
+        else:
+            # Evaluating left subtree
+            left_node = tree[0]
 
-        operator = tree[1]  # root node
+            if isinstance(left_node, list):
+                left_node = self.interpret(left_node)
 
-        return self.compute_bin(left_node, operator, right_node)
+            # Evaluating right subtree
+            right_node = tree[2]  # right subtree
+            if isinstance(right_node, list):
+                right_node = self.interpret(right_node)
+
+            operator = tree[1]  # root node
+
+            return self.compute_bin(left_node, operator, right_node)
 
     #     A
     #    / \

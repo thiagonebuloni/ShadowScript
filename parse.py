@@ -13,6 +13,12 @@ class Parser:
             return expression
         elif self.token.type.startswith("VAR"):
             return self.token
+        elif self.token.value == "+" or self.token.value == "-":
+            operator = self.token
+            self.move()
+            operand = self.factor()
+
+            return [operator, operand]
 
     def term(self):
         left_node = self.factor()

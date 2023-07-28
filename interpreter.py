@@ -2,8 +2,9 @@ from tokens import Integer, Float
 
 
 class Interpreter:
-    def __init__(self, tree):
+    def __init__(self, tree, base):
         self.tree = tree
+        self.data = base
 
     def read_INT(self, value):
         return int(value)
@@ -12,8 +13,13 @@ class Interpreter:
         return float(value)
 
     def compute_bin(self, left, op, right):
-        left_type = left.type
-        right_type = right.type
+        left_type = str(left.type)
+        right_type = str(right.type)
+
+        if op.value == "=":
+            left.type = f"VAR({right_type})"
+            self.data.write(left, right)
+            return self.data.read_all()
 
         left = getattr(self, f"read_{left_type}")(left.value)
         right = getattr(self, f"read_{right_type}")(right.value)

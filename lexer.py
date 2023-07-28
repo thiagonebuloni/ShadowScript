@@ -1,4 +1,4 @@
-from tokens import Integer, Float, Operation, Declaration, Variable
+from tokens import Integer, Float, Operation, Declaration, Variable, Boolean, Comparison
 
 
 class Lexer:
@@ -7,6 +7,9 @@ class Lexer:
     operations = "+-/*()="
     stopwords = [" "]
     declarations = ["make"]
+    boolean = ["and", "or", "not"]
+    comparisons = [">", "<", ">=", "<=", "?="]
+    special_characters = "><=?"
 
     def __init__(self, text):
         self.text = text
@@ -33,9 +36,20 @@ class Lexer:
 
                 if word in Lexer.declarations:
                     self.token = Declaration(word)
-
+                elif word in Lexer.boolean:
+                    self.token = Boolean(word)
                 else:
                     self.token = Variable(word)
+
+            elif self.char in Lexer.special_characters:
+                comparison_operator = ""
+                while self.char in Lexer.special_characters and self.idx < len(
+                    self.text
+                ):
+                    comparison_operator += self.char
+                    self.move()
+
+                self.token = Comparison(comparison_operator)
 
             self.tokens.append(self.token)
 

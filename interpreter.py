@@ -12,9 +12,15 @@ class Interpreter:
     def read_FLT(self, value):
         return float(value)
 
+    def read_VAR(self, id):
+        variable = self.data.read(id)
+        variable_type = variable.type
+
+        return getattr(self, f"read_{variable_type}")(variable.value)
+
     def compute_bin(self, left, op, right):
-        left_type = str(left.type)
-        right_type = str(right.type)
+        left_type = "VAR" if str(left.type).startswith("VAR") else str(left.type)
+        right_type = "VAR" if str(right.type).startswith("VAR") else str(right.type)
 
         if op.value == "=":
             left.type = f"VAR({right_type})"

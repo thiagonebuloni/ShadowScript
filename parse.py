@@ -14,7 +14,9 @@ class Parser:
         elif self.token.value == "not":
             operator = self.token
             self.move()
-            return [operator, self.boolean_expression()]
+            output = [operator, self.boolean_expression()]
+            return output
+
         elif self.token.type.startswith("VAR"):
             return self.token
         elif self.token.value == "+" or self.token.value == "-":
@@ -27,14 +29,64 @@ class Parser:
     def term(self):
         left_node = self.factor()
         self.move()
+
         while self.token.value == "*" or self.token.value == "/":
-            operation = self.token
+            operator = self.token
             self.move()
             right_node = self.factor()
             self.move()
-            left_node = [left_node, operation, right_node]
+
+            left_node = [left_node, operator, right_node]
 
         return left_node
+
+    def if_statement(self):
+        self.move()
+        condition = self.boolean_expression()
+
+        if self.token.value == "do":
+            self.move()
+            action = self.statement()
+
+            return condition, action
+        elif self.tokens[self.idx - 1].value == "do":
+            action = self.statement()
+            return condition, action
+
+    def if_statements(self):
+        conditions = []
+        actions = []
+        if_statement = self.if_statement()
+
+        conditions.append(if_statement[0])
+        actions.append(if_statement[1])
+
+        while self.token.value == "elif":
+            if_statement = self.if_statement()
+            conditions.append(if_statement[0])
+            actions.append(if_statement[1])
+
+        if self.token.value == "else":
+            self.move()
+            self.move()
+            else_action = self.statement()
+
+            return [conditions, actions, else_action]
+
+        return [conditions, actions]
+
+    def while_statement(self):
+        self.move()
+        condition = self.boolean_expression()
+
+        if self.token.value == "do":
+            self.move()
+            action = self.statement()
+            return [condition, action]
+
+        elif self.tokens[self.idx - 1].value == "do":
+            action = self.statement()
+            return [condition, action]
 
     def comp_expression(self):
         left_node = self.expression()
@@ -91,6 +143,11 @@ class Parser:
         ):
             # Aritmathic expression
             return self.boolean_expression()
+
+        elif self.token.value == "if":
+            return [self.token, self.if_statements()]
+        elif self.token.value == "while":
+            return [self.token, self.while_statement()]
 
     def parse(self):
         return self.statement()

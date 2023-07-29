@@ -1,4 +1,4 @@
-from tokens import Integer, Float
+from tokens import Integer, Float, Reserved
 
 
 class Interpreter:
@@ -66,16 +66,44 @@ class Interpreter:
         )
         operand = getattr(self, f"read_{operand_type}")(operand.value)
 
+        output = None
         if operator.value == "+":
-            return +operand
+            output = +operand
         elif operator.value == "-":
-            return -operand
+            output = -operand
         elif operator.value == "not":
-            return 1 if not operand else 0
+            output = 1 if not operand else 0
+
+        return Integer(output) if (operand_type == "INT") else Float(output)
 
     def interpret(self, tree=None):
         if tree is None:
             tree = self.tree
+
+        if isinstance(tree, list):
+            if isinstance(tree[0], Reserved):
+                if tree[0].value == "if":
+                    for idx, condition in enumerate(tree[1][0]):
+                        evaluation = self.interpret(condition)
+                        if evaluation.value == 1:
+                            return self.interpret(tree[1][1][idx])
+
+                    if len(tree[1]) == 3:
+                        return self.interpret(tree[1][2])
+
+                    else:
+                        return
+                elif tree[0].value == "while":
+                    condition = self.interpret(tree[1][0])
+
+                    while condition.value == 1:
+                        # Doing the action
+                        print(self.interpret(tree[1][1]))
+
+                        # Checking the condition
+                        condition = self.interpret(tree[1][0])
+
+                    return
 
         # Unary operation
         if isinstance(tree, list) and len(tree) == 2:

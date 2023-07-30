@@ -40,7 +40,7 @@ class Parser:
 
         return left_node
 
-    def if_statement(self):
+    def if_statement(self) -> tuple:
         self.move()
         condition = self.boolean_expression()
 
@@ -52,6 +52,8 @@ class Parser:
         elif self.tokens[self.idx - 1].value == "do":
             action = self.statement()
             return condition, action
+        else:
+            return ()
 
     def if_statements(self):
         conditions = []

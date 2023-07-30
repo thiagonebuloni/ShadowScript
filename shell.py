@@ -5,7 +5,13 @@ from data import Data
 
 base = Data()
 
-while True:
+text = ""
+print()
+print("type 'quit' to exit")
+print("-------------------")
+print()
+
+while text != "quit":
     text = input("ShadowScript: ")
 
     tokenizer = Lexer(text)

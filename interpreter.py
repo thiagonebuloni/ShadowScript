@@ -80,30 +80,29 @@ class Interpreter:
         if tree is None:
             tree = self.tree
 
-        if isinstance(tree, list):
-            if isinstance(tree[0], Reserved):
-                if tree[0].value == "if":
-                    for idx, condition in enumerate(tree[1][0]):
-                        evaluation = self.interpret(condition)
-                        if evaluation.value == 1:
-                            return self.interpret(tree[1][1][idx])
+        if isinstance(tree, list) and isinstance(tree[0], Reserved):
+            if tree[0].value == "if":
+                for idx, condition in enumerate(tree[1][0]):
+                    evaluation = self.interpret(condition)
+                    if evaluation.value == 1:
+                        return self.interpret(tree[1][1][idx])
 
-                    if len(tree[1]) == 3:
-                        return self.interpret(tree[1][2])
+                if len(tree[1]) == 3:
+                    return self.interpret(tree[1][2])
 
-                    else:
-                        return
-                elif tree[0].value == "while":
+                else:
+                    return
+            elif tree[0].value == "while":
+                condition = self.interpret(tree[1][0])
+
+                while condition.value == 1:
+                    # Doing the action
+                    print(self.interpret(tree[1][1]))
+
+                    # Checking the condition
                     condition = self.interpret(tree[1][0])
 
-                    while condition.value == 1:
-                        # Doing the action
-                        print(self.interpret(tree[1][1]))
-
-                        # Checking the condition
-                        condition = self.interpret(tree[1][0])
-
-                    return
+                return
 
         # Unary operation
         if isinstance(tree, list) and len(tree) == 2:

@@ -44,14 +44,7 @@ class Lexer:
             elif self.char in Lexer.letters:
                 word = self.extract_word()
 
-                if word in Lexer.declarations:
-                    self.token = Declaration(word)
-                elif word in Lexer.boolean:
-                    self.token = Boolean(word)
-                elif word in Lexer.reserved:
-                    self.token = Reserved(word)
-                else:
-                    self.token = Variable(word)
+                self.token = self.word_in_letters(word)
 
             elif self.char in Lexer.special_characters:
                 comparison_operator = ""
@@ -67,20 +60,31 @@ class Lexer:
 
         return self.tokens
 
-    def extract_number(self):
+    def word_in_letters(self, word):
+        if word in Lexer.declarations:
+            self.token = Declaration(word)
+        elif word in Lexer.boolean:
+            self.token = Boolean(word)
+        elif word in Lexer.reserved:
+            self.token = Reserved(word)
+        else:
+            self.token = Variable(word)
+        return self.token
+
+    def extract_number(self) -> Integer | Float:
         number = ""
-        isFloat = False
+        is_float = False
         while (self.char in Lexer.digits or self.char == ".") and (
             self.idx < len(self.text)
         ):
             if self.char == ".":
-                isFloat = True
+                is_float = True
             number += self.char
             self.move()
 
-        return Integer(number) if not isFloat else Float(number)
+        return Integer(number) if not is_float else Float(number)
 
-    def extract_word(self):
+    def extract_word(self) -> str:
         word = ""
         while self.char in Lexer.letters and self.idx < len(self.text):
             word += self.char
@@ -88,7 +92,7 @@ class Lexer:
 
         return word
 
-    def move(self):
+    def move(self) -> None:
         self.idx += 1
         if self.idx < len(self.text):
             self.char = self.text[self.idx]

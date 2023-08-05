@@ -84,6 +84,9 @@ class Interpreter:
             if tree[0].value == "if":
                 for idx, condition in enumerate(tree[1][0]):
                     evaluation = self.interpret(condition)
+                    # https://github.com/microsoft/pylance-release/issues/1785#issuecomment-915576918
+                    assert evaluation is not None
+
                     if evaluation.value == 1:
                         return self.interpret(tree[1][1][idx])
 
@@ -94,6 +97,8 @@ class Interpreter:
                     return
             elif tree[0].value == "while":
                 condition = self.interpret(tree[1][0])
+                # https://github.com/microsoft/pylance-release/issues/1785#issuecomment-915576918
+                assert condition is not None
 
                 while condition.value == 1:
                     # Doing the action

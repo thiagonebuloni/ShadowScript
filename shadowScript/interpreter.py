@@ -1,5 +1,6 @@
-from tokens import Integer, Float, Reserved
-import lexer
+from tokens import Integer, Float, Reserved, Token
+from numbers import Number
+from typing import Literal
 
 
 class Interpreter:
@@ -23,7 +24,9 @@ class Interpreter:
 
         return getattr(self, f"read_{variable_type}")(variable.value)
 
-    def compute_calculations(self, left, op, right):
+    def compute_calculations(
+        self, left: int | float, op: Token, right: int | float
+    ) -> int | float | Literal["", "Impossible zero division"]:
         output = ""
         if op.value == "+":
             output = left + right
@@ -37,7 +40,9 @@ class Interpreter:
             output = left / right
         return output
 
-    def compute_boolean_operations(self, left, op, right):
+    def compute_boolean_operations(
+        self, left: int | float, op: Token, right: int | float
+    ) -> Literal[1, 0, ""]:
         output = ""
         if op.value == "and":
             output = 1 if left and right else 0
@@ -45,7 +50,9 @@ class Interpreter:
             output = 1 if left or right else 0
         return output
 
-    def compute_comparisons(self, left, op, right):
+    def compute_comparisons(
+        self, left: int | float, op: Token, right: int | float
+    ) -> Literal[1, 0, ""]:
         output = ""
         if op.value == ">":
             output = 1 if left > right else 0
@@ -59,7 +66,7 @@ class Interpreter:
             output = 1 if left == right else 0
         return output
 
-    def compute_bin(self, left, op, right):
+    def compute_bin(self, left: Token, op: Token, right: Token) -> Integer | Float:
         left_type = "VAR" if str(left.type).startswith("VAR") else str(left.type)
         right_type = "VAR" if str(right.type).startswith("VAR") else str(right.type)
 

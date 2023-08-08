@@ -24,6 +24,7 @@ class Interpreter:
         return getattr(self, f"read_{variable_type}")(variable.value)
 
     def compute_calculations(self, left, op, right):
+        output = ""
         if op.value == "+":
             output = left + right
         elif op.value == "-":
@@ -31,10 +32,13 @@ class Interpreter:
         elif op.value == "*":
             output = left * right
         elif op.value == "/":
+            if left == 0 or right == 0:
+                return "Impossible zero division"
             output = left / right
         return output
 
     def compute_boolean_operations(self, left, op, right):
+        output = ""
         if op.value == "and":
             output = 1 if left and right else 0
         elif op.value == "or":
@@ -42,6 +46,7 @@ class Interpreter:
         return output
 
     def compute_comparisons(self, left, op, right):
+        output = ""
         if op.value == ">":
             output = 1 if left > right else 0
         elif op.value == ">=":
@@ -95,21 +100,6 @@ class Interpreter:
 
         return Integer(output) if (operand_type == "INT") else Float(output)
 
-    # def handle_if_condition(self, tree):
-    #     for idx, condition in enumerate(tree[1][0]):
-    #         evaluation = self.interpret(condition)
-    #         # https://github.com/microsoft/pylance-release/issues/1785#issuecomment-915576918
-    #         assert evaluation is not None
-
-    #         if evaluation.value == 1:
-    #             return self.interpret(tree[1][1][idx])
-
-    #     if len(tree[1]) == 3:
-    #         return self.interpret(tree[1][2])
-
-    #     else:
-    #         return [0]
-
     def interpret(self, tree=None):
         if tree is None:
             tree = self.tree
@@ -129,6 +119,7 @@ class Interpreter:
 
                 else:
                     return
+
             elif tree[0].value == "while":
                 condition = self.interpret(tree[1][0])
                 # https://github.com/microsoft/pylance-release/issues/1785#issuecomment-915576918

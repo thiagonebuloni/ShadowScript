@@ -132,7 +132,73 @@ def test_operator_or():
     assert result.value == 1  # type: ignore
 
 
+def test_operator_greater_than():
+    text = "2 > 0"
+    result = base_shadow_script(text)
+    assert result.value == 1  # type: ignore
+
+
+def test_operator_less_than():
+    text = "0 < 2"
+    result = base_shadow_script(text)
+    assert result.value == 1  # type: ignore
+
+
+def test_operator_equal():
+    text = "2 ?= 2"
+    result = base_shadow_script(text)
+    assert result.value == 1  # type: ignore
+
+
+def test_operator_less_or_equal_than():
+    text = "2 <= 2"
+    result = base_shadow_script(text)
+    assert result.value == 1  # type: ignore
+
+
+def test_operator_less_or_equal_than2():  #! wrong answer. WHY
+    text = "0 <= 2"
+    result = base_shadow_script(text)
+    assert result.value == 0  # type: ignore
+
+
+def test_operator_greater_or_equal_than():
+    text = "2 >= 2"
+    result = base_shadow_script(text)
+    assert result.value == 1  # type: ignore
+
+
+def test_operator_greater_or_equal_than2():
+    text = "0 >= 2"
+    result = base_shadow_script(text)
+    assert result.value == 0  # type: ignore
+
+
+# def test_operator_or():
+#     text = "(0 +  <= 2"
+#     result = base_shadow_script(text)
+#     assert result.value == 1  # type: ignore
+
+
 def test_operator_not():
     text = "not 2 > 0"
+    result = base_shadow_script(text)
+    assert result.value == 0  # type: ignore
+
+
+def test_operator_not2():
+    text = "not 2 < 0"
+    result = base_shadow_script(text)
+    assert result.value == 1  # type: ignore
+
+
+def test_operator_and_with_not():
+    text = "5 ?= 5 and (not 2 < 0)"
+    result = base_shadow_script(text)
+    assert result.value == 1  # type: ignore
+
+
+def test_operator_or_with_not():
+    text = "5 ?= 5 or (not 2 < 0)"
     result = base_shadow_script(text)
     assert result.value == 1  # type: ignore

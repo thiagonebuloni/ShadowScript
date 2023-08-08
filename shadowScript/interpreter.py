@@ -1,7 +1,12 @@
 from tokens import Integer, Float, Reserved
+import lexer
 
 
 class Interpreter:
+    operations = "+-/*()="
+    boolean = ["and", "or", "not"]
+    comparisons = [">", "<", ">=", "<=", "?="]
+
     def __init__(self, tree, base):
         self.tree = tree
         self.data = base
@@ -18,6 +23,37 @@ class Interpreter:
 
         return getattr(self, f"read_{variable_type}")(variable.value)
 
+    def compute_calculations(self, left, op, right):
+        if op.value == "+":
+            output = left + right
+        elif op.value == "-":
+            output = left - right
+        elif op.value == "*":
+            output = left * right
+        elif op.value == "/":
+            output = left / right
+        return output
+
+    def compute_boolean_operations(self, left, op, right):
+        if op.value == "and":
+            output = 1 if left and right else 0
+        elif op.value == "or":
+            output = 1 if left or right else 0
+        return output
+
+    def compute_comparisons(self, left, op, right):
+        if op.value == ">":
+            output = 1 if left > right else 0
+        elif op.value == ">=":
+            output = 1 if left >= right else 0
+        elif op.value == "<":
+            output = 1 if left < right else 0
+        elif op.value == "<=":
+            output = 1 if left >= right else 0
+        elif op.value == "?=":
+            output = 1 if left == right else 0
+        return output
+
     def compute_bin(self, left, op, right):
         left_type = "VAR" if str(left.type).startswith("VAR") else str(left.type)
         right_type = "VAR" if str(right.type).startswith("VAR") else str(right.type)
@@ -30,29 +66,12 @@ class Interpreter:
         left = getattr(self, f"read_{left_type}")(left.value)
         right = getattr(self, f"read_{right_type}")(right.value)
 
-        output = None
-        if op.value == "+":
-            output = left + right
-        elif op.value == "-":
-            output = left - right
-        elif op.value == "*":
-            output = left * right
-        elif op.value == "/":
-            output = left / right
-        elif op.value == ">":
-            output = 1 if left > right else 0
-        elif op.value == ">=":
-            output = 1 if left >= right else 0
-        elif op.value == "<":
-            output = 1 if left < right else 0
-        elif op.value == "<=":
-            output = 1 if left >= right else 0
-        elif op.value == "?=":
-            output = 1 if left == right else 0
-        elif op.value == "and":
-            output = 1 if left and right else 0
-        elif op.value == "or":
-            output = 1 if left or right else 0
+        if op.value in Interpreter.operations:
+            output = self.compute_calculations(left, op, right)
+        elif op.value in Interpreter.boolean:
+            output = self.compute_boolean_operations(left, op, right)
+        else:
+            output = self.compute_comparisons(left, op, right)
 
         return (
             Integer(output)
@@ -75,6 +94,21 @@ class Interpreter:
             output = 1 if not operand else 0
 
         return Integer(output) if (operand_type == "INT") else Float(output)
+
+    # def handle_if_condition(self, tree):
+    #     for idx, condition in enumerate(tree[1][0]):
+    #         evaluation = self.interpret(condition)
+    #         # https://github.com/microsoft/pylance-release/issues/1785#issuecomment-915576918
+    #         assert evaluation is not None
+
+    #         if evaluation.value == 1:
+    #             return self.interpret(tree[1][1][idx])
+
+    #     if len(tree[1]) == 3:
+    #         return self.interpret(tree[1][2])
+
+    #     else:
+    #         return [0]
 
     def interpret(self, tree=None):
         if tree is None:

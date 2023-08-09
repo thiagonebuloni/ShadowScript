@@ -21,14 +21,14 @@ class Lexer:
     special_characters = "><=?"
     reserved = ["if", "elif", "else", "do", "while"]
 
-    def __init__(self, text: str):
-        self.text = text
-        self.idx = 0
+    def __init__(self, text: str) -> None:
+        self.text: str = text
+        self.idx: int = 0
         self.tokens: list = []
-        self.char = self.text[self.idx]
+        self.char: str = self.text[self.idx]
         self.token = None
 
-    def tokenize(self):
+    def tokenize(self) -> list:
         while self.idx < len(self.text):
             if self.char in Lexer.digits:
                 self.token = self.extract_number()
@@ -42,7 +42,7 @@ class Lexer:
                 continue
 
             elif self.char in Lexer.letters:
-                word = self.extract_word()
+                word: str = self.extract_word()
 
                 self.token = self.word_in_letters(word)
 
@@ -60,7 +60,7 @@ class Lexer:
 
         return self.tokens
 
-    def word_in_letters(self, word):
+    def word_in_letters(self, word: str) -> Declaration | Boolean | Reserved | Variable:
         if word in Lexer.declarations:
             self.token = Declaration(word)
         elif word in Lexer.boolean:

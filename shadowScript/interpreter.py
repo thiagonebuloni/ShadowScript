@@ -66,7 +66,7 @@ class Interpreter:
             output = 1 if left == right else 0
         return output
 
-    def compute_bin(self, left: Token, op: Token, right: Token) -> Integer | Float:
+    def compute_bin(self, left, op: Token, right) -> Integer | Float:
         left_type = "VAR" if str(left.type).startswith("VAR") else str(left.type)
         right_type = "VAR" if str(right.type).startswith("VAR") else str(right.type)
 
@@ -107,8 +107,8 @@ class Interpreter:
 
         return Integer(output) if (operand_type == "INT") else Float(output)
 
-    def interpret(self, tree=None):
-        if tree is None:
+    def interpret(self, tree=None) -> Integer | Float | None:
+        if not tree:
             tree = self.tree
 
         if isinstance(tree, list) and isinstance(tree[0], Reserved):
@@ -129,10 +129,8 @@ class Interpreter:
 
             elif tree[0].value == "while":
                 condition = self.interpret(tree[1][0])
-                # https://github.com/microsoft/pylance-release/issues/1785#issuecomment-915576918
-                assert condition is not None
 
-                while condition.value == 1:
+                while condition.value == 1:  # type: ignore
                     # Doing the action
                     print(self.interpret(tree[1][1]))
 

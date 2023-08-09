@@ -25,10 +25,10 @@ class Tree:
 
 
 tree = Tree(5)
-tree.root.left = Node(3)
-tree.root.right = Node(4)
-tree.root.left.left = Node(2)
-tree.root.left.right = Node(8)
+tree.root.left = Node(3)  # type: ignore
+tree.root.right = Node(4)  # type: ignore
+tree.root.left.left = Node(2)  # type: ignore
+tree.root.left.right = Node(8)  # type: ignore
 print(tree.preorder(tree.root, []))
 print(tree.postorder(tree.root, []))
 
